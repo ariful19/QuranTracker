@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quran Reading Tracker</title>
+    <style>
+        /* Reset and basic styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            color: #333;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        /* Button styles */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap; /* Allows buttons to wrap on smaller screens */
+        }
+
+        .buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background-color: #3498db;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .buttons button.active, .buttons button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Reset Button Specific Styles */
+        #resetBtn {
+            background-color: #e74c3c; /* Distinct color for reset */
+        }
+
+        #resetBtn:hover {
+            background-color: #c0392b;
+        }
+
+        /* New Goal Button Specific Styles */
+        #goalBtn {
+            background-color: #9b59b6; /* Distinct color for goal */
+        }
+
+        #goalBtn:hover {
+            background-color: #8e44ad;
+        }
+
+        /* Surah list styles */
+        .surah-list {
+            list-style: none;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .surah-item {
+            background: white;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .surah-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        .surah-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .surah-info input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .surah-name {
+            font-size: 16px;
+            color: #2c3e50;
+            flex: 1;
+        }
+
+        .read-percentage {
+            font-size: 14px;
+            color: #7f8c8d;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        /* Percentage display */
+        .percentage-display {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        /* Dialog styles */
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        .dialog {
+            background: white;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .dialog h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .dialog .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .dialog .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .dialog .input-group label {
+            font-size: 14px;
+            color: #34495e;
+        }
+
+        .dialog .input-group input {
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .dialog .add-btn, .dialog .save-goal-btn, .dialog .reset-goal-btn {
+            padding: 10px;
+            border: none;
+            border-radius: 25px;
+            background-color: #2ecc71;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .dialog .add-btn:hover, .dialog .save-goal-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .dialog .reset-goal-btn {
+            background-color: #e74c3c;
+        }
+
+        .dialog .reset-goal-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .dialog .ranges-list, .dialog .goal-info {
+            list-style: none;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 0;
+            margin-bottom: 15px;
+        }
+
+        .dialog .ranges-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ecf0f1;
+            padding: 8px 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .dialog .ranges-list li button {
+            background: #e74c3c;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 0;
+        }
+
+        /* Goal Info Styles */
+        .goal-info {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .goal-info p {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 600px) {
+            body {
+                padding: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Quran Reading Tracker</h1>
+    <div class="buttons">
+        <button id="normalOrderBtn" class="active">Normal Order</button>
+        <button id="chronologicalOrderBtn">Chronological Order</button>
+        <!-- Reset Button Added Here -->
+        <button id="resetBtn">Reset Progress</button>
+        <!-- New Goal Button -->
+        <button id="goalBtn">Goal</button>
+    </div>
+    <ul class="surah-list" id="surahList">
+        <!-- Surah items will be populated here -->
+    </ul>
+    <div class="percentage-display" id="totalPercentage">Total Read: 0%</div>
+
+    <!-- Dialog Overlay for Ayah Ranges -->
+    <div class="dialog-overlay" id="dialogOverlay">
+        <div class="dialog">
+            <button class="close-btn" id="closeDialog">&times;</button>
+            <h2 id="dialogTitle">Manage Ayah Ranges</h2>
+            <div class="input-group">
+                <label for="fromAyah">From Ayah:</label>
+                <input type="number" id="fromAyah" min="1" value="1">
+            </div>
+            <div class="input-group">
+                <label for="toAyah">To Ayah:</label>
+                <input type="number" id="toAyah" min="1" value="1">
+            </div>
+            <button class="add-btn" id="addRangeBtn">Add Range</button>
+            <ul class="ranges-list" id="rangesList">
+                <!-- Ayah ranges will be listed here -->
+            </ul>
+            <div class="input-group">
+                <div class="percentage-display" id="suraPercentage">Read: 0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dialog Overlay for Goal Setting -->
+    <div class="dialog-overlay" id="goalDialogOverlay">
+        <div class="dialog">
+            <button class="close-btn" id="closeGoalDialog">&times;</button>
+            <h2>Set Reading Goal</h2>
+            <div class="input-group">
+                <label for="goalDate">Goal Completion Date:</label>
+                <input type="date" id="goalDate">
+            </div>
+            <button class="save-goal-btn" id="saveGoalBtn">Save Goal</button>
+            <button class="reset-goal-btn" id="resetGoalBtn">Reset Goal</button>
+            <div class="goal-info" id="goalInfo">
+                <!-- Goal information will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quran Surah Data
+        const surahData = [
+            { index:1, name:"The Opening", verses:7, words:74, chars:314, chronological:5 },
+            { index:2, name:"The Cow", verses:286, words:12316, chars:52639, chronological:87 },
+            { index:3, name:"The Family of Imraan", verses:200, words:7080, chars:30276, chronological:89 },
+            { index:4, name:"The Women", verses:176, words:7347, chars:31845, chronological:92 },
+            { index:5, name:"The Table", verses:120, words:5598, chars:23932, chronological:113 },
+            { index:6, name:"The Cattle", verses:165, words:6226, chars:26109, chronological:55 },
+            { index:7, name:"The Heights", verses:206, words:6796, chars:28550, chronological:39 },
+            { index:8, name:"The Spoils of War", verses:75, words:2525, chars:10834, chronological:88 },
+            { index:9, name:"The Repentance", verses:129, words:5169, chars:22679, chronological:112 },
+            { index:10, name:"Jonas", verses:109, words:3588, chars:14947, chronological:51 },
+            { index:11, name:"Hud", verses:123, words:3930, chars:16168, chronological:52 },
+            { index:12, name:"Joseph", verses:111, words:3566, chars:14512, chronological:53 },
+            { index:13, name:"The Thunder", verses:43, words:1701, chars:7360, chronological:96 },
+            { index:14, name:"Abraham", verses:52, words:1649, chars:7050, chronological:72 },
+            { index:15, name:"The Rock", verses:99, words:1389, chars:5896, chronological:54 },
+            { index:16, name:"The Bee", verses:128, words:3757, chars:15908, chronological:70 },
+            { index:17, name:"The Night Journey", verses:111, words:3223, chars:13549, chronological:50 },
+            { index:18, name:"The Cave", verses:110, words:3350, chars:13823, chronological:69 },
+            { index:19, name:"Mary", verses:98, words:2036, chars:8188, chronological:44 },
+            { index:20, name:"Taa-Haa", verses:135, words:2830, chars:11608, chronological:45 },
+            { index:21, name:"The Prophets", verses:112, words:2437, chars:10109, chronological:73 },
+            { index:22, name:"The Pilgrimage", verses:78, words:2537, chars:10938, chronological:103 },
+            { index:23, name:"The Believers", verses:118, words:2116, chars:8871, chronological:74 },
+            { index:24, name:"The Light", verses:64, words:2611, chars:11316, chronological:102 },
+            { index:25, name:"The Criterion", verses:77, words:1846, chars:7811, chronological:42 },
+            { index:26, name:"The Poets", verses:227, words:2710, chars:10938, chronological:47 },
+            { index:27, name:"The Ant", verses:93, words:2352, chars:9712, chronological:48 },
+            { index:28, name:"The Stories", verses:88, words:2900, chars:11817, chronological:49 },
+            { index:29, name:"The Spider", verses:69, words:1969, chars:8353, chronological:85 },
+            { index:30, name:"The Romans", verses:60, words:1636, chars:7003, chronological:84 },
+            { index:31, name:"Luqman", verses:34, words:1038, chars:4415, chronological:57 },
+            { index:32, name:"The Prostration", verses:30, words:745, chars:3153, chronological:75 },
+            { index:33, name:"The Clans", verses:73, words:2594, chars:11343, chronological:90 },
+            { index:34, name:"Sheba", verses:54, words:1741, chars:7287, chronological:58 },
+            { index:35, name:"The Originator", verses:45, words:1519, chars:6492, chronological:43 },
+            { index:36, name:"Yaseen", verses:83, words:1498, chars:6040, chronological:41 },
+            { index:37, name:"Those drawn up in Ranks", verses:182, words:1881, chars:7896, chronological:56 },
+            { index:38, name:"The letter Saad", verses:88, words:1553, chars:6600, chronological:38 },
+            { index:39, name:"The Groups", verses:75, words:2319, chars:9831, chronological:59 },
+            { index:40, name:"The Forgiver", verses:85, words:2449, chars:10388, chronological:60 },
+            { index:41, name:"Explained in detail", verses:54, words:1648, chars:6929, chronological:61 },
+            { index:42, name:"Consultation", verses:53, words:1682, chars:7227, chronological:62 },
+            { index:43, name:"Ornaments of gold", verses:89, words:1785, chars:7486, chronological:63 },
+            { index:44, name:"The Smoke", verses:59, words:710, chars:3023, chronological:64 },
+            { index:45, name:"Crouching", verses:37, words:999, chars:4167, chronological:65 },
+            { index:46, name:"The Dunes", verses:35, words:1311, chars:5561, chronological:66 },
+            { index:47, name:"Muhammad", verses:38, words:1099, chars:4853, chronological:95 },
+            { index:48, name:"The Victory", verses:29, words:1169, chars:5157, chronological:111 },
+            { index:49, name:"The Inner Apartments", verses:18, words:663, chars:2889, chronological:106 },
+            { index:50, name:"The letter Qaaf", verses:45, words:762, chars:3150, chronological:34 },
+            { index:51, name:"The Winnowing Winds", verses:60, words:753, chars:3182, chronological:67 },
+            { index:52, name:"The Mount", verses:49, words:680, chars:2852, chronological:76 },
+            { index:53, name:"The Star", verses:62, words:738, chars:3072, chronological:23 },
+            { index:54, name:"The Moon", verses:55, words:723, chars:3155, chronological:37 },
+            { index:55, name:"The Beneficent", verses:78, words:815, chars:3278, chronological:97 },
+            { index:56, name:"The Inevitable", verses:96, words:849, chars:3538, chronological:46 },
+            { index:57, name:"The Iron", verses:29, words:1188, chars:5139, chronological:94 },
+            { index:58, name:"The Pleading Woman", verses:22, words:920, chars:4111, chronological:105 },
+            { index:59, name:"The Exile", verses:24, words:897, chars:3971, chronological:101 },
+            { index:60, name:"She that is to be examined", verses:13, words:715, chars:3129, chronological:91 },
+            { index:61, name:"The Ranks", verses:14, words:425, chars:1828, chronological:109 },
+            { index:62, name:"Friday", verses:11, words:341, chars:1406, chronological:110 },
+            { index:63, name:"The Hypocrites", verses:11, words:367, chars:1558, chronological:104 },
+            { index:64, name:"Mutual Disillusion", verses:18, words:503, chars:2182, chronological:108 },
+            { index:65, name:"Divorce", verses:12, words:562, chars:2511, chronological:99 },
+            { index:66, name:"The Prohibition", verses:12, words:478, chars:2115, chronological:107 },
+            { index:67, name:"The Sovereignty", verses:30, words:659, chars:2707, chronological:77 },
+            { index:68, name:"The Pen", verses:52, words:650, chars:2760, chronological:2 },
+            { index:69, name:"The Reality", verses:52, words:575, chars:2318, chronological:78 },
+            { index:70, name:"The Ascending Stairways", verses:44, words:448, chars:1945, chronological:79 },
+            { index:71, name:"Noah", verses:28, words:430, chars:1900, chronological:71 },
+            { index:72, name:"The Jinn", verses:28, words:573, chars:2424, chronological:40 },
+            { index:73, name:"The Enshrouded One", verses:20, words:422, chars:1750, chronological:3 },
+            { index:74, name:"The Cloaked One", verses:56, words:526, chars:2274, chronological:4 },
+            { index:75, name:"The Resurrection", verses:40, words:353, chars:1445, chronological:31 },
+            { index:76, name:"Man", verses:31, words:520, chars:2252, chronological:98 },
+            { index:77, name:"The Emissaries", verses:50, words:402, chars:1653, chronological:33 },
+            { index:78, name:"The Announcement", verses:40, words:374, chars:1618, chronological:80 },
+            { index:79, name:"Those who drag forth", verses:46, words:418, chars:1783, chronological:81 },
+            { index:80, name:"He frowned", verses:42, words:306, chars:1329, chronological:24 },
+            { index:81, name:"The Overthrowing", verses:29, words:243, chars:1005, chronological:7 },
+            { index:82, name:"The Cleaving", verses:19, words:171, chars:730, chronological:82 },
+            { index:83, name:"Defrauding", verses:36, words:350, chars:1520, chronological:86 },
+            { index:84, name:"The Splitting Open", verses:25, words:243, chars:993, chronological:83 },
+            { index:85, name:"The Constellations", verses:22, words:211, chars:995, chronological:27 },
+            { index:86, name:"The Morning Star", verses:17, words:132, chars:523, chronological:36 },
+            { index:87, name:"The Most High", verses:19, words:144, chars:638, chronological:8 },
+            { index:88, name:"The Overwhelming", verses:26, words:191, chars:835, chronological:68 },
+            { index:89, name:"The Dawn", verses:30, words:293, chars:1211, chronological:10 },
+            { index:90, name:"The City", verses:20, words:177, chars:727, chronological:35 },
+            { index:91, name:"The Sun", verses:15, words:157, chars:655, chronological:26 },
+            { index:92, name:"The Night", verses:21, words:172, chars:703, chronological:9 },
+            { index:93, name:"The Morning Hours", verses:11, words:108, chars:418, chronological:11 },
+            { index:94, name:"The Consolation", verses:8, words:62, chars:265, chronological:12 },
+            { index:95, name:"The Fig", verses:8, words:69, chars:280, chronological:28 },
+            { index:96, name:"The Clot", verses:19, words:134, chars:557, chronological:1 },
+            { index:97, name:"The Power, Fate", verses:5, words:56, chars:237, chronological:25 },
+            { index:98, name:"The Evidence", verses:8, words:169, chars:822, chronological:100 },
+            { index:99, name:"The Earthquake", verses:8, words:75, chars:319, chronological:93 },
+            { index:100, name:"The Chargers", verses:11, words:83, chars:373, chronological:14 },
+            { index:101, name:"The Calamity", verses:11, words:86, chars:343, chronological:30 },
+            { index:102, name:"Competition", verses:8, words:60, chars:259, chronological:16 },
+            { index:103, name:"The Declining Day, Epoch", verses:3, words:29, chars:132, chronological:13 },
+            { index:104, name:"The Traducer", verses:9, words:66, chars:297, chronological:32 },
+            { index:105, name:"The Elephant", verses:5, words:46, chars:203, chronological:19 },
+            { index:106, name:"Quraysh", verses:4, words:41, chars:186, chronological:29 },
+            { index:107, name:"Almsgiving", verses:7, words:52, chars:218, chronological:17 },
+            { index:108, name:"Abundance", verses:3, words:26, chars:108, chronological:15 },
+            { index:109, name:"The Disbelievers", verses:6, words:48, chars:191, chronological:18 },
+            { index:110, name:"Divine Support", verses:3, words:43, chars:191, chronological:114 },
+            { index:111, name:"The Palm Fibre", verses:5, words:52, chars:193, chronological:6 },
+            { index:112, name:"Sincerity", verses:4, words:24, chars:93, chronological:22 },
+            { index:113, name:"The Dawn", verses:5, words:45, chars:170, chronological:20 },
+            { index:114, name:"Mankind", verses:6, words:38, chars:167, chronological:21 }
+        ];
+
+        // State Management
+        let currentOrder = 'normal'; // 'normal' or 'chronological'
+        let surahState = {}; // To store reading data
+        let goalState = {}; // To store goal data
+
+        // Load state from localStorage
+        function loadState() {
+            const savedSurahState = localStorage.getItem('surahState');
+            if (savedSurahState) {
+                surahState = JSON.parse(savedSurahState);
+            } else {
+                // Initialize state
+                surahData.forEach(surah => {
+                    surahState[surah.index] = {
+                        readChars: 0,
+                        readAyahs: []
+                    };
+                });
+                saveSurahState();
+            }
+
+            const savedGoalState = localStorage.getItem('goalState');
+            if (savedGoalState) {
+                goalState = JSON.parse(savedGoalState);
+            }
+        }
+
+        // Save state to localStorage
+        function saveSurahState() {
+            localStorage.setItem('surahState', JSON.stringify(surahState));
+        }
+
+        function saveGoalState() {
+            localStorage.setItem('goalState', JSON.stringify(goalState));
+        }
+
+        // Utility function to sort surahs
+        function getSortedSurahs(order) {
+            if (order === 'normal') {
+                return [...surahData].sort((a, b) => a.index - b.index);
+            } else if (order === 'chronological') {
+                return [...surahData].sort((a, b) => a.chronological - b.chronological);
+            }
+        }
+
+        // Calculate total read percentage based on characters
+        function calculateTotalPercentage() {
+            let totalChars = 0;
+            let readChars = 0;
+            surahData.forEach(surah => {
+                totalChars += surah.chars;
+                readChars += surahState[surah.index].readChars;
+            });
+            const percentage = totalChars === 0 ? 0 : ((readChars / totalChars) * 100).toFixed(2);
+            document.getElementById('totalPercentage').innerText = `Total Read: ${percentage}%`;
+        }
+
+        // Render Surah List
+        function renderSurahList() {
+            const surahList = document.getElementById('surahList');
+            surahList.innerHTML = '';
+            const sortedSurahs = getSortedSurahs(currentOrder);
+            sortedSurahs.forEach(surah => {
+                const li = document.createElement('li');
+                li.className = 'surah-item';
+                li.dataset.index = surah.index;
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'surah-info';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = surahState[surah.index].readChars >= surah.chars;
+                checkbox.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        surahState[surah.index].readChars = surah.chars;
+                        surahState[surah.index].readAyahs = [[1, surah.verses]];
+                    } else {
+                        surahState[surah.index].readChars = 0;
+                        surahState[surah.index].readAyahs = [];
+                    }
+                    saveSurahState();
+                    updateSurahItem(surah.index);
+                    calculateTotalPercentage();
+                    updateGoalProgress(); // Update goal progress if any
+                });
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'surah-name';
+                nameSpan.innerText = `${surah.index}. ${surah.name}`;
+
+                infoDiv.appendChild(checkbox);
+                infoDiv.appendChild(nameSpan);
+
+                const percentageSpan = document.createElement('span');
+                percentageSpan.className = 'read-percentage';
+                const suraPercentage = ((surahState[surah.index].readChars / surah.chars) * 100).toFixed(2);
+                percentageSpan.innerText = `${suraPercentage}%`;
+
+                li.appendChild(infoDiv);
+                li.appendChild(percentageSpan);
+
+                // Event listeners
+                li.addEventListener('dblclick', () => openDialog(surah.index));
+
+                surahList.appendChild(li);
+            });
+
+            calculateTotalPercentage();
+            updateGoalProgress(); // Update goal progress if any
+        }
+
+        // Update a single Surah item
+        function updateSurahItem(index) {
+            const surah = surahData.find(s => s.index === index);
+            const li = document.querySelector(`.surah-item[data-index="${index}"]`);
+            if (li) {
+                const checkbox = li.querySelector('input[type="checkbox"]');
+                checkbox.checked = surahState[index].readChars >= surah.chars;
+
+                const percentageSpan = li.querySelector('.read-percentage');
+                const suraPercentage = ((surahState[index].readChars / surah.chars) * 100).toFixed(2);
+                percentageSpan.innerText = `${suraPercentage}%`;
+            }
+        }
+
+        // Dialog Management
+        let currentDialogSurah = null;
+
+        function openDialog(surahIndex) {
+            currentDialogSurah = surahIndex;
+            const dialogOverlay = document.getElementById('dialogOverlay');
+            const dialogTitle = document.getElementById('dialogTitle');
+            const fromAyahInput = document.getElementById('fromAyah');
+            const toAyahInput = document.getElementById('toAyah');
+            const rangesList = document.getElementById('rangesList');
+            const suraPercentageDisplay = document.getElementById('suraPercentage');
+
+            const surah = surahData.find(s => s.index === surahIndex);
+            dialogTitle.innerText = `Manage Ayah Ranges: ${surah.name}`;
+            fromAyahInput.min = 1;
+            fromAyahInput.max = surah.verses;
+            toAyahInput.min = 1;
+            toAyahInput.max = surah.verses;
+
+            // **Auto-Set "From Ayah" Input Based on Already Read Ayahs**
+            // Determine the next Ayah after the last read Ayah
+            let nextAyah = 1; // Default to 1
+            const ranges = surahState[surahIndex].readAyahs;
+            if (ranges.length > 0) {
+                // Sort ranges by start Ayah
+                const sortedRanges = ranges.slice().sort((a, b) => a[0] - b[0]);
+                const lastRange = sortedRanges[sortedRanges.length - 1];
+                nextAyah = lastRange[1] + 1;
+                if (nextAyah > surah.verses) {
+                    nextAyah = surah.verses; // Cap at maximum Ayah
+                }
+            }
+            fromAyahInput.value = nextAyah;
+            toAyahInput.value = nextAyah; // Initialize to the same value
+
+            // Populate ranges
+            rangesList.innerHTML = '';
+            ranges.forEach((range, idx) => {
+                const li = document.createElement('li');
+                li.innerHTML = `${range[0]} - ${range[1]}`;
+                const removeBtn = document.createElement('button');
+                removeBtn.innerText = '×';
+                removeBtn.title = 'Remove Range';
+                removeBtn.addEventListener('click', () => {
+                    ranges.splice(idx,1);
+                    updateReadChars(surahIndex);
+                    saveSurahState();
+                    openDialog(surahIndex); // Refresh dialog
+                    renderSurahList();
+                });
+                li.appendChild(removeBtn);
+                rangesList.appendChild(li);
+            });
+
+            // Update percentage
+            const ayahReadPercentage = calculateSuraPercentageByAyahs(surahIndex);
+            suraPercentageDisplay.innerText = `Read: ${ayahReadPercentage}`;
+
+            dialogOverlay.style.display = 'flex';
+        }
+
+        // Close Dialog
+        document.getElementById('closeDialog').addEventListener('click', () => {
+            document.getElementById('dialogOverlay').style.display = 'none';
+        });
+
+        // Add Range
+        document.getElementById('addRangeBtn').addEventListener('click', () => {
+            const fromAyah = parseInt(document.getElementById('fromAyah').value);
+            const toAyah = parseInt(document.getElementById('toAyah').value);
+            const surah = surahData.find(s => s.index === currentDialogSurah);
+
+            if (fromAyah < 1 || fromAyah > surah.verses || toAyah < fromAyah || toAyah > surah.verses) {
+                alert('Please enter valid Ayah ranges.');
+                return;
+            }
+
+            let ranges = surahState[currentDialogSurah].readAyahs;
+
+            // Check for overlaps and merge if necessary
+            let merged = false;
+            for (let i = 0; i < ranges.length; i++) {
+                let [start, end] = ranges[i];
+                if (!(toAyah < start -1 || fromAyah > end +1)) {
+                    // Overlapping or adjacent
+                    ranges[i][0] = Math.min(start, fromAyah);
+                    ranges[i][1] = Math.max(end, toAyah);
+                    merged = true;
+                    // Check if it needs to merge with subsequent ranges
+                    for (let j = i +1; j < ranges.length; j++) {
+                        let [s, e] = ranges[j];
+                        if (ranges[i][1] >= s -1) {
+                            ranges[i][1] = Math.max(ranges[i][1], e);
+                            ranges.splice(j,1);
+                            j--;
+                        } else {
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (!merged) {
+                ranges.push([fromAyah, toAyah]);
+                ranges.sort((a, b) => a[0] - b[0]);
+            }
+
+            // Update state
+            surahState[currentDialogSurah].readAyahs = ranges;
+            updateReadChars(currentDialogSurah);
+            saveSurahState();
+            openDialog(currentDialogSurah); // Refresh dialog
+            renderSurahList();
+        });
+
+        // Calculate Surah Percentage by Ayahs
+        function calculateSuraPercentageByAyahs(surahIndex) {
+            const surah = surahData.find(s => s.index === surahIndex);
+            const ranges = surahState[surahIndex].readAyahs;
+            if (!ranges || ranges.length === 0) return '0.00%';
+
+            // Calculate total read characters based on ranges
+            // Assuming uniform distribution of characters per Ayah
+            const charsPerAyah = surah.chars / surah.verses;
+            let readChars = 0;
+            ranges.forEach(range => {
+                readChars += (range[1] - range[0] +1) * charsPerAyah;
+            });
+            const percentage = ((readChars / surah.chars) * 100).toFixed(2);
+            return `${percentage}%`;
+        }
+
+        // Update read characters based on Ayah ranges
+        function updateReadChars(surahIndex) {
+            const surah = surahData.find(s => s.index === surahIndex);
+            const ranges = surahState[surahIndex].readAyahs;
+            if (!ranges || ranges.length === 0) {
+                surahState[surahIndex].readChars = 0;
+                return;
+            }
+            const charsPerAyah = surah.chars / surah.verses;
+            let totalRead = 0;
+            ranges.forEach(range => {
+                totalRead += (range[1] - range[0] +1) * charsPerAyah;
+            });
+            surahState[surahIndex].readChars = Math.min(Math.round(totalRead), surah.chars);
+        }
+
+        // Order Buttons
+        document.getElementById('normalOrderBtn').addEventListener('click', () => {
+            currentOrder = 'normal';
+            document.getElementById('normalOrderBtn').classList.add('active');
+            document.getElementById('chronologicalOrderBtn').classList.remove('active');
+            renderSurahList();
+        });
+
+        document.getElementById('chronologicalOrderBtn').addEventListener('click', () => {
+            currentOrder = 'chronological';
+            document.getElementById('chronologicalOrderBtn').classList.add('active');
+            document.getElementById('normalOrderBtn').classList.remove('active');
+            renderSurahList();
+        });
+
+        // **Reset Button Functionality**
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            const confirmation = confirm('Are you sure you want to reset all reading progress? This action cannot be undone.');
+            if (confirmation) {
+                // Clear localStorage
+                localStorage.removeItem('surahState');
+                localStorage.removeItem('goalState');
+                
+                // Re-initialize surahState
+                surahData.forEach(surah => {
+                    surahState[surah.index] = {
+                        readChars: 0,
+                        readAyahs: []
+                    };
+                });
+
+                // Reset goalState
+                goalState = {};
+
+                // Save the reset state
+                saveSurahState();
+                saveGoalState();
+                
+                // Re-render the list
+                renderSurahList();
+                
+                // Notify the user
+                alert('All reading progress and goals have been reset.');
+            }
+        });
+
+        // **Goal Button Functionality**
+        document.getElementById('goalBtn').addEventListener('click', () => {
+            openGoalDialog();
+        });
+
+        function openGoalDialog() {
+            const goalDialog = document.getElementById('goalDialogOverlay');
+            const goalDateInput = document.getElementById('goalDate');
+            const goalInfoDiv = document.getElementById('goalInfo');
+
+            if (goalState.goalDate) {
+                goalDateInput.value = goalState.goalDate;
+            } else {
+                goalDateInput.value = '';
+            }
+
+            // Populate goal info
+            renderGoalInfo();
+
+            goalDialog.style.display = 'flex';
+        }
+
+        // Close Goal Dialog
+        document.getElementById('closeGoalDialog').addEventListener('click', () => {
+            document.getElementById('goalDialogOverlay').style.display = 'none';
+        });
+
+        // Save Goal
+        document.getElementById('saveGoalBtn').addEventListener('click', () => {
+            const goalDateValue = document.getElementById('goalDate').value;
+            if (!goalDateValue) {
+                alert('Please select a valid goal completion date.');
+                return;
+            }
+
+            const goalDate = new Date(goalDateValue);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            if (goalDate < today) {
+                alert('Goal date must be in the future.');
+                return;
+            }
+
+            goalState.goalDate = goalDateValue;
+            saveGoalState();
+            renderGoalInfo();
+            alert('Reading goal has been set.');
+        });
+
+        // Reset Goal
+        document.getElementById('resetGoalBtn').addEventListener('click', () => {
+            const confirmation = confirm('Are you sure you want to reset your reading goal?');
+            if (confirmation) {
+                goalState = {};
+                saveGoalState();
+                renderGoalInfo();
+                alert('Reading goal has been reset.');
+            }
+        });
+
+        // Render Goal Info
+        function renderGoalInfo() {
+            const goalInfoDiv = document.getElementById('goalInfo');
+            goalInfoDiv.innerHTML = '';
+
+            if (!goalState.goalDate) {
+                goalInfoDiv.innerHTML = '<p>No reading goal set.</p>';
+                return;
+            }
+
+            const goalDate = new Date(goalState.goalDate);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            const timeDiff = goalDate - today;
+            const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+            // Total characters to read
+            let totalChars = 0;
+            let readChars = 0;
+            surahData.forEach(surah => {
+                totalChars += surah.chars;
+                readChars += surahState[surah.index].readChars;
+            });
+            const totalPercentage = ((readChars / totalChars) * 100).toFixed(2);
+            const remainingPercentage = (100 - totalPercentage).toFixed(2);
+
+            // Calculate current pace: chars per day
+            const startDateStr = goalState.startDate ? goalState.startDate : today.toISOString().split('T')[0];
+            const startDate = new Date(startDateStr);
+            const elapsedDays = Math.ceil((today - startDate) / (1000 * 60 * 60 * 24)) || 1; // Avoid division by zero
+            const charsPerDay = Math.floor(readChars / elapsedDays);
+
+            // Estimate days needed to finish remaining chars
+            const remainingChars = totalChars - readChars;
+            const estimatedDays = charsPerDay > 0 ? Math.ceil(remainingChars / charsPerDay) : 'N/A';
+            let projectedCompletionDate = 'N/A';
+            if (estimatedDays !== 'N/A') {
+                const projectedDate = new Date(today);
+                projectedDate.setDate(projectedDate.getDate() + estimatedDays);
+                projectedCompletionDate = projectedDate.toISOString().split('T')[0];
+            }
+
+            // Calculate required daily percentage to reach goal
+            const requiredChars = remainingChars;
+            const requiredCharsPerDay = daysRemaining > 0 ? Math.ceil(requiredChars / daysRemaining) : 'N/A';
+            let requiredPercentagePerDay = 'N/A';
+            if (requiredCharsPerDay !== 'N/A') {
+                requiredPercentagePerDay = ((requiredCharsPerDay / totalChars) * 100).toFixed(2);
+            }
+
+            // Create info elements
+            const p1 = document.createElement('p');
+            p1.innerText = `Goal Completion Date: ${goalState.goalDate}`;
+
+            const p2 = document.createElement('p');
+            p2.innerText = `Days Remaining: ${daysRemaining}`;
+
+            const p3 = document.createElement('p');
+            p3.innerText = `Total Remaining: ${remainingPercentage}%`;
+
+            const p4 = document.createElement('p');
+            p4.innerText = `Estimated Days to Complete at Current Pace: ${estimatedDays}`;
+
+            const p5 = document.createElement('p');
+            p5.innerText = `Projected Completion Date: ${projectedCompletionDate}`;
+
+            const p6 = document.createElement('p');
+            p6.innerText = `Required Daily Reading Percentage: ${requiredPercentagePerDay}%`;
+
+            goalInfoDiv.appendChild(p1);
+            goalInfoDiv.appendChild(p2);
+            goalInfoDiv.appendChild(p3);
+            goalInfoDiv.appendChild(p4);
+            goalInfoDiv.appendChild(p5);
+            goalInfoDiv.appendChild(p6);
+        }
+
+        // Update Goal Progress
+        function updateGoalProgress() {
+            if (goalState.goalDate) {
+                renderGoalInfo();
+            }
+        }
+
+        // Initialize App
+        loadState();
+        renderSurahList();
+
+        // Initialize Goal Start Date if not set
+        function initializeGoalStartDate() {
+            if (goalState.goalDate && !goalState.startDate) {
+                goalState.startDate = new Date().toISOString().split('T')[0];
+                saveGoalState();
+            }
+        }
+
+        initializeGoalStartDate();
+
+        // Optionally, you can add a mechanism to update the startDate when user starts tracking
+        // For simplicity, we're setting it once when the goal is first set
+    </script>
+</body>
+</html>

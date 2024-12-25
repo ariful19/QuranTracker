@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        window.addEventListener("load", () => {
+            var checked = localStorage.getItem("checked");
+            if (checked) {
+                var arr = JSON.parse(checked);
+                arr.forEach(o => {
+                    document.getElementById(o).checked = true;
+                });
+                calculateSum();
+                var isc = localStorage.getItem("isChrono");
+                if (isc) {
+                    Chrono();
+                }
+            }
+        });
+        // A function to calculate the sum of checked percentages
+        function calculateSum() {
+            // Get all the checkboxes
+            var checkboxes = document.querySelectorAll("input[type=checkbox]");
+            // Initialize the sum to zero
+            var sum = 0;
+            var carr = [];
+            // Loop through the checkboxes
+            for (var i = 0; i < checkboxes.length; i++) {
+                // If the checkbox is checked, add its value to the sum
+                if (checkboxes[i].checked) {
+                    sum += parseFloat(checkboxes[i].value);
+                    carr.push(checkboxes[i].id);
+                }
+            }
+            localStorage.setItem("checked", JSON.stringify(carr));
+            // Get the div element to display the sum
+            var div = document.getElementById("sum");
+            // Set the text content of the div to the sum
+            div.textContent = "Sum: " + sum.toFixed(2) + "%";
+        }
+        function Clear() {
+            var checkboxes = document.querySelectorAll("input[type=checkbox]");
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+            });
+            var div = document.getElementById("sum");
+            // Set the text content of the div to the sum
+            div.textContent = "Sum: 0%";
+            localStorage.setItem("checked", "");
+            localStorage.setItem("isChrono", "");
+            window.location.reload();
+        }
+        var isChrono = false;
+        function Chrono() {
+            isChrono = true;
+            localStorage.setItem("isChrono", "true");
+
+            var numbers = [96, 68, 73, 74, 1, 111, 81, 87, 92, 89, 93, 94, 103, 100, 108, 102, 107, 109, 105, 113, 114, 112, 53, 80, 97, 91, 85, 95, 106, 101, 75, 104, 77, 50, 90, 86, 54, 38, 7, 72, 36, 25, 35, 19, 20, 56, 26, 27, 28, 17, 10, 11, 12, 15, 6, 37, 31, 34, 39, 40, 41, 42, 43, 44, 45, 46, 51, 88, 18, 16, 71, 14, 21, 23, 32, 52, 67, 69, 70, 78, 79, 82, 84, 30, 29, 83, 2, 8, 3, 33, 60, 4, 99, 57, 47, 13, 55, 76, 65, 98, 59, 24, 22, 63, 58, 49, 66, 64, 61, 62, 48, 5, 9, 110];
+            var cont = document.getElementById("cbs");
+            numbers.forEach(cb => {
+                var pdiv = document.getElementById("cb" + cb).parentElement.parentElement;
+                var cpdiv = pdiv.cloneNode(true);
+                cont.appendChild(cpdiv);
+                pdiv.remove();
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Surah List</h1>
+    <!-- A list of checkboxes with percentage values -->
+    <div id="sum">Sum: 0%</div>
+    <div id="cbs">
+        <div><label><input id="cb1" type="checkbox" value="0.05" onchange="calculateSum(this)">1. The Opening
+                (0.05%)</label></div>
+        <div><label><input id="cb2" type="checkbox" value="7.87" onchange="calculateSum(this)">2. The Cow
+                (7.87%)</label>
+        </div>
+        <div><label><input id="cb3" type="checkbox" value="4.53" onchange="calculateSum(this)">3. The Family of Imraan
+                (4.53%)</label></div>
+        <div><label><input id="cb4" type="checkbox" value="4.76" onchange="calculateSum(this)">4. The Women
+                (4.76%)</label>
+        </div>
+        <div><label><input id="cb5" type="checkbox" value="3.58" onchange="calculateSum(this)">5. The Table
+                (3.58%)</label>
+        </div>
+        <div><label><input id="cb6" type="checkbox" value="3.90" onchange="calculateSum(this)">6. The Cattle
+                (3.90%)</label>
+        </div>
+        <div><label><input id="cb7" type="checkbox" value="4.27" onchange="calculateSum(this)">7. The Heights
+                (4.27%)</label></div>
+        <div><label><input id="cb8" type="checkbox" value="1.62" onchange="calculateSum(this)">8. The Spoils of War
+                (1.62%)</label></div>
+        <div><label><input id="cb9" type="checkbox" value="3.39" onchange="calculateSum(this)">9. The Repentance
+                (3.39%)</label></div>
+        <div><label><input id="cb10" type="checkbox" value="2.24" onchange="calculateSum(this)">10. Jonas
+                (2.24%)</label>
+        </div>
+        <div><label><input id="cb11" type="checkbox" value="2.42" onchange="calculateSum(this)">11. Hud (2.42%)</label>
+        </div>
+        <div><label><input id="cb12" type="checkbox" value="2.17" onchange="calculateSum(this)">12. Joseph
+                (2.17%)</label>
+        </div>
+        <div><label><input id="cb13" type="checkbox" value="1.10" onchange="calculateSum(this)">13. The Thunder
+                (1.10%)</label></div>
+        <div><label><input id="cb14" type="checkbox" value="1.05" onchange="calculateSum(this)">14. Abraham
+                (1.05%)</label>
+        </div>
+        <div><label><input id="cb15" type="checkbox" value="0.88" onchange="calculateSum(this)">15. The Rock
+                (0.88%)</label>
+        </div>
+        <div><label><input id="cb16" type="checkbox" value="2.38" onchange="calculateSum(this)">16. The Bee
+                (2.38%)</label>
+        </div>
+        <div><label><input id="cb17" type="checkbox" value="2.03" onchange="calculateSum(this)">17. The Night Journey
+                (2.03%)</label></div>
+        <div><label><input id="cb18" type="checkbox" value="2.07" onchange="calculateSum(this)">18. The Cave
+                (2.07%)</label>
+        </div>
+        <div><label><input id="cb19" type="checkbox" value="1.22" onchange="calculateSum(this)">19. Mary (1.22%)</label>
+        </div>
+        <div><label><input id="cb20" type="checkbox" value="1.74" onchange="calculateSum(this)">20. Taa-Haa
+                (1.74%)</label>
+        </div>
+        <div><label><input id="cb21" type="checkbox" value="1.51" onchange="calculateSum(this)">21. The Prophets
+                (1.51%)</label></div>
+        <div><label><input id="cb22" type="checkbox" value="1.64" onchange="calculateSum(this)">22. The Pilgrimage
+                (1.64%)</label></div>
+        <div><label><input id="cb23" type="checkbox" value="1.33" onchange="calculateSum(this)">23. The Believers
+                (1.33%)</label></div>
+        <div><label><input id="cb24" type="checkbox" value="1.69" onchange="calculateSum(this)">24. The Light
+                (1.69%)</label></div>
+        <div><label><input id="cb25" type="checkbox" value="1.17" onchange="calculateSum(this)">25. The Criterion
+                (1.17%)</label></div>
+        <div><label><input id="cb26" type="checkbox" value="1.64" onchange="calculateSum(this)">26. The Poets
+                (1.64%)</label></div>
+        <div><label><input id="cb27" type="checkbox" value="1.45" onchange="calculateSum(this)">27. The Ant
+                (1.45%)</label>
+        </div>
+        <div><label><input id="cb28" type="checkbox" value="1.77" onchange="calculateSum(this)">28. The Stories
+                (1.77%)</label></div>
+        <div><label><input id="cb29" type="checkbox" value="1.25" onchange="calculateSum(this)">29. The Spider
+                (1.25%)</label></div>
+        <div><label><input id="cb30" type="checkbox" value="1.05" onchange="calculateSum(this)">30. The Romans
+                (1.05%)</label></div>
+        <div><label><input id="cb31" type="checkbox" value="0.66" onchange="calculateSum(this)">31. Luqman
+                (0.66%)</label>
+        </div>
+        <div><label><input id="cb32" type="checkbox" value="0.47" onchange="calculateSum(this)">32. The Prostration
+                (0.47%)</label></div>
+        <div><label><input id="cb33" type="checkbox" value="1.70" onchange="calculateSum(this)">33. The Clans
+                (1.70%)</label></div>
+        <div><label><input id="cb34" type="checkbox" value="1.09" onchange="calculateSum(this)">34. Sheba
+                (1.09%)</label>
+        </div>
+        <div><label><input id="cb35" type="checkbox" value="0.97" onchange="calculateSum(this)">35. The Originator
+                (0.97%)</label></div>
+        <div><label><input id="cb36" type="checkbox" value="0.90" onchange="calculateSum(this)">36. Yaseen
+                (0.90%)</label>
+        </div>
+        <div><label><input id="cb37" type="checkbox" value="1.18" onchange="calculateSum(this)">37. Those drawn up in
+                Ranks
+                (1.18%)</label></div>
+        <div><label><input id="cb38" type="checkbox" value="0.99" onchange="calculateSum(this)">38. The letter Saad
+                (0.99%)</label></div>
+        <div><label><input id="cb39" type="checkbox" value="1.47" onchange="calculateSum(this)">39. The Groups
+                (1.47%)</label></div>
+        <div><label><input id="cb40" type="checkbox" value="1.55" onchange="calculateSum(this)">40. The Forgiver
+                (1.55%)</label></div>
+        <div><label><input id="cb41" type="checkbox" value="1.04" onchange="calculateSum(this)">41. Explained in detail
+                (1.04%)</label></div>
+        <div><label><input id="cb42" type="checkbox" value="1.08" onchange="calculateSum(this)">42. Consultation
+                (1.08%)</label></div>
+        <div><label><input id="cb43" type="checkbox" value="1.12" onchange="calculateSum(this)">43. Ornaments of gold
+                (1.12%)</label></div>
+        <div><label><input id="cb44" type="checkbox" value="0.45" onchange="calculateSum(this)">44. The Smoke
+                (0.45%)</label></div>
+        <div><label><input id="cb45" type="checkbox" value="0.62" onchange="calculateSum(this)">45. Crouching
+                (0.62%)</label></div>
+        <div><label><input id="cb46" type="checkbox" value="0.83" onchange="calculateSum(this)">46. The Dunes
+                (0.83%)</label></div>
+        <div><label><input id="cb47" type="checkbox" value="0.73" onchange="calculateSum(this)">47. Muhammad
+                (0.73%)</label>
+        </div>
+        <div><label><input id="cb48" type="checkbox" value="0.77" onchange="calculateSum(this)">48. The Victory
+                (0.77%)</label></div>
+        <div><label><input id="cb49" type="checkbox" value="0.43" onchange="calculateSum(this)">49. The Inner Apartments
+                (0.43%)</label></div>
+        <div><label><input id="cb50" type="checkbox" value="0.47" onchange="calculateSum(this)">50. The letter Qaaf
+                (0.47%)</label></div>
+        <div><label><input id="cb51" type="checkbox" value="0.48" onchange="calculateSum(this)">51. The Winnowing Winds
+                (0.48%)</label></div>
+        <div><label><input id="cb52" type="checkbox" value="0.43" onchange="calculateSum(this)">52. The Mount
+                (0.43%)</label></div>
+        <div><label><input id="cb53" type="checkbox" value="0.46" onchange="calculateSum(this)">53. The Star
+                (0.46%)</label>
+        </div>
+        <div><label><input id="cb54" type="checkbox" value="0.47" onchange="calculateSum(this)">54. The Moon
+                (0.47%)</label>
+        </div>
+        <div><label><input id="cb55" type="checkbox" value="0.49" onchange="calculateSum(this)">55. The Beneficent
+                (0.49%)</label></div>
+        <div><label><input id="cb56" type="checkbox" value="0.53" onchange="calculateSum(this)">56. The Inevitable
+                (0.53%)</label></div>
+        <div><label><input id="cb57" type="checkbox" value="0.77" onchange="calculateSum(this)">57. The Iron
+                (0.77%)</label>
+        </div>
+        <div><label><input id="cb58" type="checkbox" value="0.61" onchange="calculateSum(this)">58. The Pleading Woman
+                (0.61%)</label></div>
+        <div><label><input id="cb59" type="checkbox" value="0.59" onchange="calculateSum(this)">59. The Exile
+                (0.59%)</label></div>
+        <div><label><input id="cb60" type="checkbox" value="0.47" onchange="calculateSum(this)">60. She that is to be
+                examined (0.47%)</label></div>
+        <div><label><input id="cb61" type="checkbox" value="0.27" onchange="calculateSum(this)">61. The Ranks
+                (0.27%)</label></div>
+        <div><label><input id="cb62" type="checkbox" value="0.21" onchange="calculateSum(this)">62. Friday
+                (0.21%)</label>
+        </div>
+        <div><label><input id="cb63" type="checkbox" value="0.23" onchange="calculateSum(this)">63. The Hypocrites
+                (0.23%)</label></div>
+        <div><label><input id="cb64" type="checkbox" value="0.33" onchange="calculateSum(this)">64. Mutual Disillusion
+                (0.33%)</label></div>
+        <div><label><input id="cb65" type="checkbox" value="0.38" onchange="calculateSum(this)">65. Divorce
+                (0.38%)</label>
+        </div>
+        <div><label><input id="cb66" type="checkbox" value="0.32" onchange="calculateSum(this)">66. The Prohibition
+                (0.32%)</label></div>
+        <div><label><input id="cb67" type="checkbox" value="0.40" onchange="calculateSum(this)">67. The Sovereignty
+                (0.40%)</label></div>
+        <div><label><input id="cb68" type="checkbox" value="0.41" onchange="calculateSum(this)">68. The Pen
+                (0.41%)</label>
+        </div>
+        <div><label><input id="cb69" type="checkbox" value="0.35" onchange="calculateSum(this)">69. The Reality
+                (0.35%)</label></div>
+        <div><label><input id="cb70" type="checkbox" value="0.29" onchange="calculateSum(this)">70. The Ascending
+                Stairways
+                (0.29%)</label></div>
+        <div><label><input id="cb71" type="checkbox" value="0.28" onchange="calculateSum(this)">71. Noah (0.28%)</label>
+        </div>
+        <div><label><input id="cb72" type="checkbox" value="0.36" onchange="calculateSum(this)">72. The Jinn
+                (0.36%)</label>
+        </div>
+        <div><label><input id="cb73" type="checkbox" value="0.26" onchange="calculateSum(this)">73. The Enshrouded One
+                (0.26%)</label></div>
+        <div><label><input id="cb74" type="checkbox" value="0.34" onchange="calculateSum(this)">74. The Cloaked One
+                (0.34%)</label></div>
+        <div><label><input id="cb75" type="checkbox" value="0.22" onchange="calculateSum(this)">75. The Resurrection
+                (0.22%)</label></div>
+        <div><label><input id="cb76" type="checkbox" value="0.34" onchange="calculateSum(this)">76. Man (0.34%)</label>
+        </div>
+        <div><label><input id="cb77" type="checkbox" value="0.25" onchange="calculateSum(this)">77. The Emissaries
+                (0.25%)</label></div>
+        <div><label><input id="cb78" type="checkbox" value="0.24" onchange="calculateSum(this)">78. The Announcement
+                (0.24%)</label></div>
+        <div><label><input id="cb79" type="checkbox" value="0.27" onchange="calculateSum(this)">79. Those who drag forth
+                (0.27%)</label></div>
+        <div><label><input id="cb80" type="checkbox" value="0.20" onchange="calculateSum(this)">80. He frowned
+                (0.20%)</label></div>
+        <div><label><input id="cb81" type="checkbox" value="0.15" onchange="calculateSum(this)">81. The Overthrowing
+                (0.15%)</label></div>
+        <div><label><input id="cb82" type="checkbox" value="0.11" onchange="calculateSum(this)">82. The Cleaving
+                (0.11%)</label></div>
+        <div><label><input id="cb83" type="checkbox" value="0.23" onchange="calculateSum(this)">83. Defrauding
+                (0.23%)</label></div>
+        <div><label><input id="cb84" type="checkbox" value="0.15" onchange="calculateSum(this)">84. The Splitting Open
+                (0.15%)</label></div>
+        <div><label><input id="cb85" type="checkbox" value="0.15" onchange="calculateSum(this)">85. The Constellations
+                (0.15%)</label></div>
+        <div><label><input id="cb86" type="checkbox" value="0.08" onchange="calculateSum(this)">86. The Morning Star
+                (0.08%)</label></div>
+        <div><label><input id="cb87" type="checkbox" value="0.10" onchange="calculateSum(this)">87. The Most High
+                (0.10%)</label></div>
+        <div><label><input id="cb88" type="checkbox" value="0.12" onchange="calculateSum(this)">88. The Overwhelming
+                (0.12%)</label></div>
+        <div><label><input id="cb89" type="checkbox" value="0.18" onchange="calculateSum(this)">89. The Dawn
+                (0.18%)</label>
+        </div>
+        <div><label><input id="cb90" type="checkbox" value="0.11" onchange="calculateSum(this)">90. The City
+                (0.11%)</label>
+        </div>
+        <div><label><input id="cb91" type="checkbox" value="0.10" onchange="calculateSum(this)">91. The Sun
+                (0.10%)</label>
+        </div>
+        <div><label><input id="cb92" type="checkbox" value="0.11" onchange="calculateSum(this)">92. The Night
+                (0.11%)</label></div>
+        <div><label><input id="cb93" type="checkbox" value="0.06" onchange="calculateSum(this)">93. The Morning Hours
+                (0.06%)</label></div>
+        <div><label><input id="cb94" type="checkbox" value="0.04" onchange="calculateSum(this)">94. The Consolation
+                (0.04%)</label></div>
+        <div><label><input id="cb95" type="checkbox" value="0.04" onchange="calculateSum(this)">95. The Fig
+                (0.04%)</label>
+        </div>
+        <div><label><input id="cb96" type="checkbox" value="0.08" onchange="calculateSum(this)">96. The Clot
+                (0.08%)</label>
+        </div>
+        <div><label><input id="cb97" type="checkbox" value="0.04" onchange="calculateSum(this)">97. The Power, Fate
+                (0.04%)</label></div>
+        <div><label><input id="cb98" type="checkbox" value="0.12" onchange="calculateSum(this)">98. The Evidence
+                (0.12%)</label></div>
+        <div><label><input id="cb99" type="checkbox" value="0.05" onchange="calculateSum(this)">99. The Earthquake
+                (0.05%)</label></div>
+        <div><label><input id="cb100" type="checkbox" value="0.06" onchange="calculateSum(this)">100. The Chargers
+                (0.06%)</label></div>
+        <div><label><input id="cb101" type="checkbox" value="0.05" onchange="calculateSum(this)">101. The Calamity
+                (0.05%)</label></div>
+        <div><label><input id="cb102" type="checkbox" value="0.04" onchange="calculateSum(this)">102. Competition
+                (0.04%)</label></div>
+        <div><label><input id="cb103" type="checkbox" value="0.02" onchange="calculateSum(this)">103. The Declining Day,
+                Epoch (0.02%)</label></div>
+        <div><label><input id="cb104" type="checkbox" value="0.04" onchange="calculateSum(this)">104. The Traducer
+                (0.04%)</label></div>
+        <div><label><input id="cb105" type="checkbox" value="0.03" onchange="calculateSum(this)">105. The Elephant
+                (0.03%)</label></div>
+        <div><label><input id="cb106" type="checkbox" value="0.03" onchange="calculateSum(this)">106. Quraysh
+                (0.03%)</label></div>
+        <div><label><input id="cb107" type="checkbox" value="0.03" onchange="calculateSum(this)">107. Almsgiving
+                (0.03%)</label></div>
+        <div><label><input id="cb108" type="checkbox" value="0.02" onchange="calculateSum(this)">108. Abundance
+                (0.02%)</label></div>
+        <div><label><input id="cb109" type="checkbox" value="0.03" onchange="calculateSum(this)">109. The Disbelievers
+                (0.03%)</label></div>
+        <div><label><input id="cb110" type="checkbox" value="0.03" onchange="calculateSum(this)">110. Divine Support
+                (0.03%)</label></div>
+        <div><label><input id="cb111" type="checkbox" value="0.03" onchange="calculateSum(this)">111. The Palm Fibre
+                (0.03%)</label></div>
+        <div><label><input id="cb112" type="checkbox" value="0.01" onchange="calculateSum(this)">112. Sincerity
+                (0.01%)</label></div>
+        <div><label><input id="cb113" type="checkbox" value="0.03" onchange="calculateSum(this)">113. The Dawn
+                (0.03%)</label></div>
+        <div><label><input id="cb114" type="checkbox" value="0.02" onchange="calculateSum(this)">114. Mankind
+                (0.02%)</label></div>
+    </div>
+    <!-- A div element to display the sum -->
+    <button onclick="Clear()">Clear</button>
+    <button onclick="Chrono()">OrderChrono</button>
+</body>
+
+</html>
